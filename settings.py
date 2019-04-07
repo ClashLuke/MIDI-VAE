@@ -33,7 +33,7 @@ do_not_sample_in_evaluation = True
 
 
 # Folder names or file names will be classified by those labels
-classes = ['style1', 'style2'] #list of strings like 'Bach', 'Mozart'. Name a folder in your source_folder like that and make sure there are no files with that name
+classes = ['classic'] #list of strings like 'Bach', 'Mozart'. Name a folder in your source_folder like that and make sure there are no files with that name
 
 #whether to include unknown classes as a third class
 include_unknown = False 
@@ -122,7 +122,8 @@ use_embedding = False
 embedding_dim = 0
 decode = True
 optimizer = 'Adam' #Adam, #RMSprop
-vae_loss = 'categorical_crossentropy'
+#vae_loss = 'categorical_crossentropy'
+vae_loss = 'binary_crossentropy'
 activity_regularizer = None
 reset_states = True
 include_composer_feature = False
@@ -151,7 +152,7 @@ if include_silent_note:
     silent_dim = 1
 else:
     silent_dim = 0
-activation = 'softmax'
+activation = 'relu'
 cell_type = 'GRU' #can be 'GRU', 'LSTM', SimpleRNN
 silent_weight = 1.0 #set to 1.0 if disabled
 teacher_force = False
@@ -180,7 +181,7 @@ if append_signature_vector_to_latent:
 meta_instrument= True
 meta_instrument_dim = instrument_dim
 meta_instrument_length = max_voices
-meta_instrument_activation = 'softmax'
+meta_instrument_activation = 'relu'
 meta_instrument_weight = 0.1
 
 if not attach_instruments:
@@ -194,10 +195,10 @@ signature_weight = 1.0
 # use additional decoder at pitch output or instrument output to enforce mutual information with z
 composer_decoder_at_notes_output=False
 composer_decoder_at_notes_weight=1.0
-composer_decoder_at_notes_activation='softmax'
+composer_decoder_at_notes_activation='relu'
 composer_decoder_at_instrument_output=False
 composer_decoder_at_instrument_weight=1.0
-composer_decoder_at_instrument_activation='softmax'
+composer_decoder_at_instrument_activation='relu'
 
 if composer_decoder_at_notes_output or composer_decoder_at_instrument_output or include_composer_decoder:
     num_composers = num_classes
@@ -210,13 +211,13 @@ output_dim = new_num_notes+silent_dim + instrument_dim
 # use velocity roll
 meta_velocity=True
 meta_velocity_length=output_length
-meta_velocity_activation='sigmoid'
+meta_velocity_activation='relu'
 meta_velocity_weight=1.0
 
 #use held notes roll
 meta_held_notes=False
 meta_held_notes_length=output_length
-meta_held_notes_activation='softmax'
+meta_held_notes_activation='relu'
 meta_held_notes_weight=0.1
 
 combine_velocity_and_held_notes=False
@@ -231,7 +232,7 @@ meta_next_notes_teacher_force=False #Not implemented in vae_training or vae_eval
 
 activation_before_splitting='tanh'
 
-epochs = 2000
+epochs = 65535
 test_step = 1
 verbose = True
 show_plot = False

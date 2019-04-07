@@ -269,7 +269,8 @@ def test():
     total_test_loss_composer_instrument = 0
     total_test_composer_instrument_accuracy = 0
     
-    bar = progressbar.ProgressBar(max_value=test_set_size, redirect_stdout=False)
+    bar = progressbar.ProgressBar(maxval=test_set_size)
+    bar.start()
     for test_song_num in range(len(X_test)):
 
         X = X_test[test_song_num]
@@ -307,24 +308,34 @@ def test():
             total_test_accuracy += loss[enumerated_metric_names.index('decoder_acc_1')]
             
             if meta_instrument:
-                count +=1
-                total_test_meta_instrument_loss += loss[enumerated_metric_names.index('decoder_loss_' + str(count))]
-                total_test_meta_instrument_accuracy += loss[enumerated_metric_names.index('decoder_acc_' + str(count))]
-
+                count += 1
+                try:
+                    total_train_meta_instrument_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_instrument_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
             if meta_velocity:
                 count += 1
-                total_test_meta_velocity_loss += loss[enumerated_metric_names.index('decoder_loss_' + str(count))]
-                total_test_meta_velocity_accuracy += loss[enumerated_metric_names.index('decoder_acc_' + str(count))]
-
+                try:
+                    total_train_meta_velocity_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_velocity_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
             if meta_held_notes:
                 count += 1
-                total_test_meta_held_notes_loss += loss[enumerated_metric_names.index('decoder_loss_' + str(count))]
-                total_test_meta_held_notes_accuracy += loss[enumerated_metric_names.index('decoder_acc_' + str(count))]
-
+                try:
+                    total_train_meta_held_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_held_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
+			
             if meta_next_notes:
                 count += 1
-                total_test_meta_next_notes_loss += loss[enumerated_metric_names.index('decoder_loss_' + str(count))]
-                total_test_meta_next_notes_accuracy += loss[enumerated_metric_names.index('decoder_acc_' + str(count))]
+                try:
+                    total_train_meta_next_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_next_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
 
         else:
             if len(enumerated_metric_names) > 2:
@@ -771,7 +782,8 @@ for e in range(start_epoch, epochs):
         T_train = [T_train[i] for i in permutation]
         
 
-    bar = progressbar.ProgressBar(max_value=train_set_size)
+    bar = progressbar.ProgressBar(maxval=train_set_size)
+    bar.start()
     for train_song_num in range(len(X_train)):
 
         X = X_train[train_song_num]
@@ -801,12 +813,7 @@ for e in range(start_epoch, epochs):
 
         input_list, output_list, sample_weight = vae_definition.prepare_autoencoder_input_and_output_list(X,Y,C,I,V,D,S,H, return_sample_weight=True)
 
-        hist = autoencoder.fit(input_list, output_list,
-                epochs=1,
-                batch_size=batch_size,
-                shuffle=False,
-                sample_weight=sample_weight,
-                verbose=False)
+        hist = autoencoder.fit(input_list, output_list, epochs=1, batch_size=batch_size, shuffle=False, sample_weight=sample_weight, verbose=False)
 
         if reset_states:
             autoencoder.reset_states()
@@ -821,23 +828,37 @@ for e in range(start_epoch, epochs):
         if meta_instrument or meta_velocity or meta_held_notes or meta_next_notes:
             count = 1
             total_train_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
-            total_train_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+#originally decoder_loss_ + str(count)
+            total_train_notes_loss += np.mean(hist.history['decoder_loss'])
             if meta_instrument:
                 count += 1
-                total_train_meta_instrument_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
-                total_train_meta_instrument_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                try:
+                    total_train_meta_instrument_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_instrument_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
             if meta_velocity:
                 count += 1
-                total_train_meta_velocity_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
-                total_train_meta_velocity_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                try:
+                    total_train_meta_velocity_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_velocity_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
             if meta_held_notes:
                 count += 1
-                total_train_meta_held_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
-                total_train_meta_held_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                try:
+                    total_train_meta_held_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_held_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
+			
             if meta_next_notes:
                 count += 1
-                total_train_meta_next_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
-                total_train_meta_next_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                try:
+                    total_train_meta_next_notes_accuracy += np.mean(hist.history['decoder_acc_' + str(count)])
+                    total_train_meta_next_notes_loss += np.mean(hist.history['decoder_loss_' + str(count)])
+                except:
+                    count -= 1
         else:
             if len(hist.history.keys()) > 2:
                 total_train_accuracy += np.mean(hist.history['decoder_acc'])

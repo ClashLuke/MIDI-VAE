@@ -45,7 +45,7 @@ class VAE(object):
         input_length=16, 
         output_length=16, 
         latent_rep_size=256, 
-        vae_loss = 'categorical_crossentropy',
+        vae_loss = 'binary_crossentropy',
         optimizer='Adam', 
         activation='sigmoid', 
         lstm_activation='tanh', 
@@ -364,7 +364,7 @@ class VAE(object):
 
         if self.meta_instrument:
             #dont append meta_instrument since it is already appended previously to the autoencoder output
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.meta_instrument_weight)
             sample_weight_modes.append('None')
 
@@ -377,13 +377,13 @@ class VAE(object):
 
         if self.meta_held_notes:
             #dont append meta_held_notes since it is already appended previously to the autoencoder output
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.meta_held_notes_weight)
             sample_weight_modes.append('None')
 
         if self.meta_next_notes:
             #dont append meta_next_notes since it is already appended previously to the autoencoder output
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.meta_next_notes_weight)
             sample_weight_modes.append('None')
 
@@ -392,7 +392,7 @@ class VAE(object):
             predicted_composer = self._build_composer_decoder(encoded_input)
             self.composer_decoder = Model(encoded_input, predicted_composer, name='composer_decoder')
             autoencoder_output_list.append(self.composer_decoder(encoded))
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.composer_weight)
             sample_weight_modes.append('None')
 
@@ -415,7 +415,7 @@ class VAE(object):
                 autoencoder_output_list.append(self.composer_decoder_2(decoder_final_output))
             else:
                 autoencoder_output_list.append(self.composer_decoder_2(decoder_final_output[0]))
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.composer_decoder_at_notes_weight)
             sample_weight_modes.append('None')
 
@@ -427,7 +427,7 @@ class VAE(object):
             predicted_composer_3 = self._build_composer_decoder_at_instrument_output(meta_instrument_composer_decoder_input)
             self.composer_decoder_3 = Model(meta_instrument_composer_decoder_input, predicted_composer_3, name='composer_decoder_at_instruments')
             autoencoder_output_list.append(self.composer_decoder_3(decoder_final_output[1]))
-            loss_list.append('categorical_crossentropy')
+            loss_list.append('binary_crossentropy')
             loss_weights_list.append(self.composer_decoder_at_instrument_weight)
             sample_weight_modes.append('None')
 

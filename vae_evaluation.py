@@ -1924,7 +1924,7 @@ if evaluate_autoencoding_and_stuff:
         switch_instruments_matrix = np.zeros((num_classes, num_classes, 128, 128))
 
 
-    bar = progressbar.ProgressBar(max_value=test_set_size, redirect_stdout=False)
+    bar = progressbar.ProgressBar(maxval=test_set_size, redirect_stdout=False)
 
     previous_is_null = True
     previous_encoded_rep = None

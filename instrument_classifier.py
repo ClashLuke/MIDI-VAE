@@ -103,7 +103,8 @@ outputs = dense(lstm_outputs)
 model = Model(inputs, outputs)
 if optimizer == 'RMS': optimizer = RMSprop(lr=learning_rate)
 if optimizer == 'Adam': optimizer = Adam(lr=learning_rate)
-loss = 'categorical_crossentropy'
+#loss = 'categorical_crossentropy'
+loss = 'binary_crossentropy'
 model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 print(model.summary())
 
@@ -125,7 +126,7 @@ def test(testID):
 
     confusion_matrix = np.zeros((num_classes, num_classes))
 
-    bar = progressbar.ProgressBar(max_value=test_set_size, redirect_stdout=False)
+    bar = progressbar.ProgressBar(maxval=test_set_size, redirect_stdout=False)
     for i, test_song in enumerate(X_test):
 
         X = I_test[i]
@@ -225,7 +226,7 @@ for e in range(epochs):
         D_train = [D_train[i] for i in permutation]
         T_train = [T_train[i] for i in permutation]
 
-    bar = progressbar.ProgressBar(max_value=train_set_size)
+    bar = progressbar.ProgressBar(maxval=train_set_size)
 
     # Train model with each song seperatly
     for i, train_song in enumerate(X_train):
